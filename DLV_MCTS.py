@@ -43,6 +43,8 @@ def main():
 
     model = loadData()
     
+    if whichMode == "train": return
+    
     if trainingModel == "autoencoder":
         (model,autoencoder) = model
         if startLayer == -1: autoencoder = model
