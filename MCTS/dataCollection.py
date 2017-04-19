@@ -50,6 +50,9 @@ class dataCollection:
         
     def addSuccPercent(self, sp):
         self.succPercent = sp
+        
+    def addComment(self,str):
+        self.fileHandler.write(str)
 
     def provideDetails(self): 
         self.fileHandler.write("running time: \n")

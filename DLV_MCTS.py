@@ -56,6 +56,8 @@ def main():
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
+    originalScore = reTrain.evaluateWithOriginalModel()
+    dc.addComment("original test score: %s"%originalScore)
     # finding adversarial examples from original model
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
@@ -82,9 +84,9 @@ def main():
     dc = dataCollection(phase)
     # update model with new data
     model = reTrain.training()
-    reTrain.evaluateWithOriginalModel()
-    reTrain.evaluateWithUpdatedModel()
-
+    
+    updatedScore = reTrain.evaluateWithUpdatedModel()
+    dc.addComment("updated test score: %s"%updatedScore)
     # finding adversarial examples from updated model
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
