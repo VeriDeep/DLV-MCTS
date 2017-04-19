@@ -145,7 +145,7 @@ class mcts:
         allValues = {}
         for childIndex in self.children[index]: 
             allValues[childIndex] = self.cost[childIndex]
-        print("finding best children from %s"%(allValues))
+        nprint("finding best children from %s"%(allValues))
         return max(allValues.iteritems(), key=operator.itemgetter(1))[0]
         
     def treeTraversal(self,index):

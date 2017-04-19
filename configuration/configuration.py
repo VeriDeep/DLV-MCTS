@@ -6,7 +6,6 @@ author: Xiaowei Huang
 """
 
 from network_configuration import *
-
 from usual_configuration import * 
 
 
@@ -28,13 +27,13 @@ dataset = "mnist"
 whichMode = "read"
 #whichMode = "train"
 
-# which model to train
-trainingModel = "autoencoder"
-#trainingModel = "normal"
+# whether working with hidden layer
+# normal means working with input layer
+# autoencoder means working with hidden layer
+#trainingModel = "autoencoder"
+trainingModel = "normal"
 
-# work with a single image or a batch of images 
-#dataProcessing = "single"
-dataProcessing = "batch"
+# the number of images to be handled 
 dataProcessingBatchNum = 1
 
 

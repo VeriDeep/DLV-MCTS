@@ -30,7 +30,6 @@ from keras.utils import np_utils
 
 # for training cifar10
 from keras.preprocessing.image import ImageDataGenerator
-
 from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint
 
 

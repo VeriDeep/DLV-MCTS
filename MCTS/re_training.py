@@ -45,6 +45,9 @@ class re_training:
         
     def returnData(self):
         return self.xtrain, self.ytrain
+        
+    def numberOfNewExamples(self):
+        return len(self.xtrain)
 
     def training(self):
     

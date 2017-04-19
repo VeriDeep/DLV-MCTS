@@ -41,6 +41,17 @@ def network_parameters(dataset):
         span = 255/float(255)
         numSpan = 1
 
+    elif dataset == "cifar10": 
+        NN = NN_cifar10
+        dataBasics = cifar10
+        filterSize = 3 
+        directory_model_string = makedirectory("networks/cifar10")
+        directory_statistics_string = makedirectory("data/cifar10_statistics")
+        directory_pic_string = makedirectory("data/cifar10_pic")
+ 
+        featureDims = 15
+        span = 255/float(255)
+        numSpan = 1
         
     elif dataset == "gtsrb": 
         NN = NN_gtsrb
@@ -51,19 +62,6 @@ def network_parameters(dataset):
         directory_pic_string = makedirectory("data/gtsrb_pic")
         
         featureDims = 10
-        span = 255/float(255)
-        numSpan = 1
-
-
-    elif dataset == "cifar10": 
-        NN = NN_cifar10
-        dataBasics = cifar10
-        filterSize = 3 
-        directory_model_string = makedirectory("networks/cifar10")
-        directory_statistics_string = makedirectory("data/cifar10_statistics")
-        directory_pic_string = makedirectory("data/cifar10_pic")
- 
-        featureDims = 15
         span = 255/float(255)
         numSpan = 1
                 

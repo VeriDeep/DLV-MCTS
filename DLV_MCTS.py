@@ -48,51 +48,53 @@ def main():
     if trainingModel == "autoencoder":
         (model,autoencoder) = model
         if startLayer == -1: autoencoder = model
+    else: autoencoder = model
     
+    # initialise a dataCollection instance
     dc = dataCollection("original")
-    # handle a set of inputs starting from an index
+    # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
-    if dataProcessing == "batch": 
-        succNum = 0
-        for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
-            print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-            succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
-            if succ == True: succNum += 1
-        dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
-    else: 
-        print "\n\nprocessing input of index %s in the dataset: " %(str(startIndexOfImage))
-        handleOne(model,autoencoder,dc,reTrain,startIndexOfImage)
+    
+    # finding adversarial examples from original model
+    succNum = 0
+    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
+        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
+        succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
+        if succ == True: succNum += 1
+    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
             
-    # output statistics
+    # output statistics for original model
     print("Please refer to the file %s for statistics."%(dc.fileName))
-    if dataProcessing == "batch": 
-        dc.provideDetails()
-        dc.summarise()
+    dc.provideDetails()
+    dc.summarise()
     dc.close()
     
+    if reTrain.numberOfNewExamples() == 0: 
+        print "failed to find new examples for further training"
+        return
+    else: 
+        print "%s new examples are founded."%(reTrain.numberOfNewExamples())
+        print "ready for re-training ... "
     
-    # update model with new data
+    # initialise a dataCollection instance
     dc = dataCollection("updated")
+    # update model with new data
     model = reTrain.training()
     reTrain.evaluateWithOriginalModel()
     reTrain.evaluateWithUpdatedModel()
-    
-    if dataProcessing == "batch": 
-        succNum = 0
-        for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
-            print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-            succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
-            if succ == True: succNum += 1
-        dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
-    else: 
-        print "\n\nprocessing input of index %s in the dataset: " %(str(startIndexOfImage))
-        handleOne(model,autoencoder,dc,reTrain,startIndexOfImage)
 
-    # output statistics
+    # finding adversarial examples from updated model
+    succNum = 0
+    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
+        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
+        succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
+        if succ == True: succNum += 1
+    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
+
+    # output statistics for updated model
     print("Please refer to the file %s for statistics."%(dc.fileName))
-    if dataProcessing == "batch": 
-        dc.provideDetails()
-        dc.summarise()
+    dc.provideDetails()
+    dc.summarise()
     dc.close()
       
 ###########################################################################
