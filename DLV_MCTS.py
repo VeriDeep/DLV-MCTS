@@ -51,7 +51,8 @@ def main():
     else: autoencoder = model
     
     # initialise a dataCollection instance
-    dc = dataCollection("original")
+    phase = "original"
+    dc = dataCollection(phase)
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -59,7 +60,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
             
@@ -77,7 +78,8 @@ def main():
         print "ready for re-training ... "
     
     # initialise a dataCollection instance
-    dc = dataCollection("updated")
+    phase = "updated"
+    dc = dataCollection(phase)
     # update model with new data
     model = reTrain.training()
     reTrain.evaluateWithOriginalModel()
@@ -87,7 +89,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,whichIndex)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
 
@@ -103,7 +105,7 @@ def main():
 #
 ############################################################################
 
-def handleOne(model,autoencoder,dc,reTrain,startIndexOfImage):
+def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage):
         
     # visualisation, switch on if needed
     #visualization(model,501)
@@ -204,7 +206,7 @@ def handleOne(model,autoencoder,dc,reTrain,startIndexOfImage):
     re = newClass != originalClass
                 
     if re == True:     
-        path0="%s/%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,origClassStr,newClassStr,newConfident)
+        path0="%s/%s_%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,phase,origClassStr,newClassStr,newConfident)
         dataBasics.save(-1,image1,path0)
         path0="%s/%s_diff.png"%(directory_pic_string,startIndexOfImage)
         dataBasics.save(-1,np.subtract(image,image1),path0)
