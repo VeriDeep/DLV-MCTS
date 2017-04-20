@@ -52,7 +52,7 @@ def main():
     
     # initialise a dataCollection instance
     phase = "firstRound"
-    dc = dataCollection(phase+"_"+firstRound_manipulation)
+    dc = dataCollection("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, phase, firstRound_manipulation))
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -62,7 +62,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,manipulationType)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,firstRound_manipulation)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
             
@@ -76,12 +76,12 @@ def main():
         print "failed to find new examples for further training"
         return
     else: 
-        print "%s new examples are founded."%(reTrain.numberOfNewExamples())
         print "ready for re-training ... "
     
     # initialise a dataCollection instance
     phase = "sndRound"
-    dc = dataCollection(phase+"_"+sndRound_manipulation)
+    dc = dataCollection("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, phase, sndRound_manipulation))
+    dc.addComment("%s new examples are founded.\n\n"%(reTrain.numberOfNewExamples()))
     # update model with new data
     model = reTrain.training()
     
@@ -91,7 +91,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,manipulationType)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,sndRound_manipulation)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
 
@@ -209,7 +209,7 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
     re = newClass != originalClass
                 
     if re == True:     
-        path0="%s/%s_%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,phase,origClassStr,newClassStr,newConfident)
+        path0="%s/%s_%s_%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,phase,manipulationType, origClassStr,newClassStr,newConfident)
         dataBasics.save(-1,image1,path0)
         path0="%s/%s_diff.png"%(directory_pic_string,startIndexOfImage)
         dataBasics.save(-1,np.subtract(image,image1),path0)

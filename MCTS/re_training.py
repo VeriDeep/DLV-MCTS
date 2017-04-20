@@ -21,6 +21,7 @@ class re_training:
         self.xtrain = []
         # temporary setting for classification
         self.ytrain = []
+        # re-training parameters
         self.batch_size = 128
         self.nb_epoch = 2
         
@@ -100,7 +101,9 @@ class re_training:
         elif dataset == "cifar10":
             (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
     
-        self.originalModel.compile(optimizer='adadelta', loss='binary_crossentropy')
+        self.originalModel.compile(loss='categorical_crossentropy',
+                                   optimizer='adadelta',
+                                   metrics=['accuracy'])
         score = self.originalModel.evaluate(X_test, Y_test, verbose=0, batch_size=batch_size)
         scoreReport = '%s %s'%(score,self.originalModel.metrics_names)
         return scoreReport
@@ -117,7 +120,6 @@ class re_training:
             ae =  "_retrained" 
             model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
 
-    
         model.compile(loss='categorical_crossentropy',
                       optimizer='adadelta',
                       metrics=['accuracy'])
