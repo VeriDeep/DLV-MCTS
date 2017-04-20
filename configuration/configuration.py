@@ -34,7 +34,7 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 1
+dataProcessingBatchNum = 20
 
 
 #######################################################

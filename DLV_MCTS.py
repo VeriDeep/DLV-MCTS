@@ -52,7 +52,8 @@ def main():
     
     # initialise a dataCollection instance
     phase = "original"
-    dc = dataCollection(phase)
+    manipulationType = "squares"
+    dc = dataCollection(phase+"_"+manipulationType)
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -62,7 +63,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,"squares")
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,manipulationType)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
             
@@ -81,7 +82,8 @@ def main():
     
     # initialise a dataCollection instance
     phase = "updated"
-    dc = dataCollection(phase)
+    manipulationType = "pixelSets"
+    dc = dataCollection(phase+"_"+manipulationType)
     # update model with new data
     model = reTrain.training()
     
@@ -91,7 +93,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,"pixelSets")
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,manipulationType)
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
 
