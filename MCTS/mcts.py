@@ -98,7 +98,6 @@ class mcts:
             allChildren = initialisePixelSets(self.autoencoder,self.activations,[])
         elif self.manipulationType == "squares": 
             allChildren = initialiseSquares(self.autoencoder,self.activations,[])
-            print allChildren
             
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 

@@ -51,14 +51,13 @@ def main():
     else: autoencoder = model
     
     # initialise a dataCollection instance
-    phase = "original"
-    manipulationType = "squares"
-    dc = dataCollection(phase+"_"+manipulationType)
+    phase = "firstRound"
+    dc = dataCollection(phase+"_"+firstRound_manipulation)
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
     originalScore = reTrain.evaluateWithOriginalModel()
-    dc.addComment("original test score: %s"%originalScore)
+    dc.addComment("original test score: %s\n\n"%originalScore)
     # finding adversarial examples from original model
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
@@ -81,14 +80,13 @@ def main():
         print "ready for re-training ... "
     
     # initialise a dataCollection instance
-    phase = "updated"
-    manipulationType = "pixelSets"
-    dc = dataCollection(phase+"_"+manipulationType)
+    phase = "sndRound"
+    dc = dataCollection(phase+"_"+sndRound_manipulation)
     # update model with new data
     model = reTrain.training()
     
     updatedScore = reTrain.evaluateWithUpdatedModel()
-    dc.addComment("updated test score: %s"%updatedScore)
+    dc.addComment("updated test score: %s\n\n"%updatedScore)
     # finding adversarial examples from updated model
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):

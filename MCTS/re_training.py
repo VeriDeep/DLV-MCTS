@@ -102,8 +102,8 @@ class re_training:
     
         self.originalModel.compile(optimizer='adadelta', loss='binary_crossentropy')
         score = self.originalModel.evaluate(X_test, Y_test, verbose=0, batch_size=batch_size)
-        print('Test score:', score)
-        return score
+        scoreReport = '%s %s'%(score,self.originalModel.metrics_names)
+        return scoreReport
         
     def evaluateWithUpdatedModel(self): 
 
@@ -122,5 +122,5 @@ class re_training:
                       optimizer='adadelta',
                       metrics=['accuracy'])
         score = model.evaluate(X_test, Y_test, verbose=0, batch_size=batch_size)
-        print('Test score:', score)
-        return score
+        scoreReport = '%s %s'%(score,model.metrics_names)
+        return scoreReport
