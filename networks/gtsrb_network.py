@@ -22,7 +22,6 @@ from keras.optimizers import SGD
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
 
-
 #
 
 from gtsrb import * 

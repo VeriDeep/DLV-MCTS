@@ -62,7 +62,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,"squares")
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
             
@@ -91,7 +91,7 @@ def main():
     succNum = 0
     for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
         print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex)
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,"pixelSets")
         if succ == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
 
@@ -107,7 +107,7 @@ def main():
 #
 ############################################################################
 
-def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage):
+def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationType):
         
     # visualisation, switch on if needed
     #visualization(model,501)
@@ -150,6 +150,7 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage):
     if startLayer > -1: 
         visualizeOneLayer(model,image,startLayer)
         st.visualizationMCTS()
+    st.setManipulationType(manipulationType)
     st.initialiseActions()
 
     start_time_all = time.time()

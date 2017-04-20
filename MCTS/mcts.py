@@ -21,7 +21,8 @@ from inputManipulation import applyManipulation
 from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage
 
 from decisionTree import decisionTree
-from initialiseRegions import initialiseRegions
+from initialisePixelSets import initialisePixelSets
+from initialiseSquares import initialiseSquares
 from re_training import re_training
 
 
@@ -33,6 +34,7 @@ class mcts:
         self.activations = activations
         self.model = model
         self.autoencoder = autoencoder
+        self.manipulationType = "pixelSets"
         
         self.spans = {}
         self.numSpans = {}
@@ -86,9 +88,18 @@ class mcts:
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations1,axis=0)))
             path0="%s/%s_autoencoder_%s.png"%(directory_pic_string,startIndexOfImage,k)
             dataBasics.save(-1,output, path0)
+            
+    def setManipulationType(self,typeStr): 
+        self.manipulationType = typeStr 
         
     def initialiseActions(self): 
-        allChildren = initialiseRegions(self.autoencoder,self.activations,[])
+        # initialise actions according to the type of manipulations
+        if self.manipulationType == "pixelSets": 
+            allChildren = initialisePixelSets(self.autoencoder,self.activations,[])
+        elif self.manipulationType == "squares": 
+            allChildren = initialiseSquares(self.autoencoder,self.activations,[])
+            print allChildren
+            
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 
         print "%s actions have been initialised. "%(len(self.actions))
@@ -166,7 +177,7 @@ class mcts:
         
     def initialiseExplorationNode(self,index,availableActions):
         nprint("expanding %s"%(index))
-        for (actionId, (span,numSpan,_)) in availableActions.iteritems() : #initialiseRegions(self.model,self.image,list(set(self.spans[index].keys() + self.uselessPixels))): 
+        for (actionId, (span,numSpan,_)) in availableActions.iteritems() : #initialisePixelSets(self.model,self.image,list(set(self.spans[index].keys() + self.uselessPixels))): 
             self.indexToNow += 1
             self.indexToActionID[self.indexToNow] = actionId
             self.initialiseLeafNode(self.indexToNow,index,span,numSpan)
@@ -199,7 +210,7 @@ class mcts:
             i += 1
         return (childTerminated, max(sampleValues))
         #return self.sampleNext(self.spans[index],self.numSpans[index])
-        #allChildren = initialiseRegions(model,self.image,self.spans[index].keys()) 
+        #allChildren = initialisePixelSets(model,self.image,self.spans[index].keys()) 
     
     def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs): 
         #print spansPath.keys()
@@ -238,8 +249,7 @@ class mcts:
             return (depth == 0, termValue)        
         else: 
             #print("continue sampling node ... ")
-            #allChildren = initialiseRegions(self.model,self.activations,spansPath.keys())
-
+            #allChildren = initialisePixelSets(self.model,self.activations,spansPath.keys())
             randomActionIndex = random.choice(list(set(availableActionIDs)-set(usedActionIDs))) #random.randint(0, len(allChildren)-1)
             (span,numSpan,_) = self.actions[randomActionIndex]
             availableActionIDs.remove(randomActionIndex)

@@ -30,44 +30,23 @@ from configuration import *
 #
 ################################################################
 
-def initialiseRegions(model,image,manipulated):
+
+randomRate = 0.0
+
+def initialisePixelSets(model,image,manipulated):
     allRegions = []
-    num = numOfFeatures
+    num = image.size/featureDims  # numOfFeatures
     newManipulated1 = []
     newManipulated2 = manipulated
     while num > 0 : 
-        oneRegion = initialiseRegionActivation(model,newManipulated2,image)
+        oneRegion = initialisePixelSetActivation(model,newManipulated2,image)
         allRegions.append(oneRegion)
         newManipulated1 = copy.deepcopy(newManipulated2)
         newManipulated2 = list(set(newManipulated2 + oneRegion[0].keys()))
         if newManipulated1 == newManipulated2: break
         num -= 1
-    #print len(allRegions)
+    print "%s manipulations have been initialised."%(len(allRegions))
     return allRegions
-
-        
-def getTop(model,image,activation,manipulated,numDimsToMani,layerToConsider): 
-    if heuristics == "Activation": 
-        return getTopActivation(activation,manipulated,layerToConsider,numDimsToMani)
-    elif heuristics == "Derivative": 
-        return getTopDerivative(model,image,activation,manipulated,numDimsToMani,layerToConsider)
-
-def getTop2D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider): 
-    if heuristics == "Activation": 
-        return getTop2DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
-    elif heuristics == "Derivative": 
-        return getTop2DDerivative(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider)
-        
-def getTop3D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider): 
-    if heuristics == "Activation": 
-        return getTop3DActivation(activation,manipulated,ps,numDimsToMani,layerToConsider)
-    elif heuristics == "Derivative": 
-        return getTop3DDerivative(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider)
-
-
-
-
-
 
 
 ############################################################
@@ -77,104 +56,40 @@ def getTop3D(model,image,activation,manipulated,ps,numDimsToMani,layerToConsider
 ################################################################   
 
  
-def initialiseRegionActivation(model,manipulated,image): 
+def initialisePixelSetActivation(model,manipulated,image): 
 
-    config = NN.getConfig(model)
-
-    # get the type of the current layer
-    layerType = getLayerType(model,0)
-    #[ lt for (l,lt) in config if l == 0 ]
-    #if len(layerType) > 0: layerType = layerType[0]
-    #else: print "cannot find the layerType"
-    
-    #print len(manipulated)
-
-    if layerType == "Convolution2D":
-
-        nextSpan = {}
-        nextNumSpan = {}
-        if len(image.shape) == 2: 
-            # decide how many elements in the input will be considered
-            if image.size < featureDims : 
-                numDimsToMani = image.size 
-            else: numDimsToMani = featureDims
-            # get those elements with maximal/minimum values
-            randnum = random()
-            if randnum > explorationRate : 
-                ls = getTop2DActivation(image,manipulated,[],numDimsToMani,-1)
-            else:  
-                ls = getRandom2DActivation(image,manipulated,[],numDimsToMani,-1)
-                
-        elif len(image.shape) == 3:
-            # decide how many elements in the input will be considered
-            if image.size < featureDims : 
-                numDimsToMani = image.size
-            else: numDimsToMani = featureDims
-            # get those elements with maximal/minimum values
-            randnum = random()
-            if randnum > explorationRate : 
-                ls = getTop3DActivation(image,manipulated,[],numDimsToMani,-1)
-            else: 
-                ls = getRandom3DActivation(image,manipulated,[],numDimsToMani,-1)
-
-        for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
-
-    elif layerType == "InputLayer":
-        nextSpan = {}
-        nextNumSpan = {}
+    nextSpan = {}
+    nextNumSpan = {}
+    if len(image.shape) == 2: 
         # decide how many elements in the input will be considered
-        if len(image)  < featureDims : 
-            numDimsToMani = len(image) 
+        if image.size < featureDims : 
+            numDimsToMani = image.size 
         else: numDimsToMani = featureDims
         # get those elements with maximal/minimum values
-        ls = getTopActivation(image,manipulated,-1,numDimsToMani)
-        for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
+        randnum = random()
+        if randnum > randomRate : 
+            ls = getTop2DActivation(image,manipulated,[],numDimsToMani,-1)
+        else:  
+            ls = getRandom2DActivation(image,manipulated,[],numDimsToMani,-1)
+                
+    elif len(image.shape) == 3:
+        # decide how many elements in the input will be considered
+        if image.size < featureDims : 
+            numDimsToMani = image.size
+        else: numDimsToMani = featureDims
+        # get those elements with maximal/minimum values
+        randnum = random()
+        if randnum > randomRate : 
+            ls = getTop3DActivation(image,manipulated,[],numDimsToMani,-1)
+        else: 
+            ls = getRandom3DActivation(image,manipulated,[],numDimsToMani,-1)
+
+    for i in ls: 
+        nextSpan[i] = span
+        nextNumSpan[i] = numSpan
             
-    elif layerType == "ZeroPadding2D": 
-        #image1 = addZeroPadding2D(image)
-        image1 = image
-        nextSpan = {}
-        nextNumSpan = {}
-        if len(image1.shape) == 2: 
-            # decide how many elements in the input will be considered
-            if image1.size < featureDims : 
-                numDimsToMani = image1.size
-            else: numDimsToMani = featureDims
-            # get those elements with maximal/minimum values
-            randnum = random()
-            if randnum > explorationRate : 
-                ls = getTop2DActivation(image1,manipulated,[],numDimsToMani,-1)
-            else: 
-                ls = getRandom2DActivation(image1,manipulated,[],numDimsToMani,-1)
-
-
-        elif len(image1.shape) == 3:
-            # decide how many elements in the input will be considered
-            if image1.size < featureDims : 
-                numDimsToMani = image1.size
-            else: numDimsToMani = featureDims
-            # get those elements with maximal/minimum values
-            randnum = random()
-            if randnum > explorationRate : 
-                ls = getTop3DActivation(image1,manipulated,[],numDimsToMani,-1)  
-            else: 
-                ls = getRandom3DActivation(image1,manipulated,[],numDimsToMani,-1)         
-       
-        for i in ls: 
-            nextSpan[i] = span
-            nextNumSpan[i] = numSpan
-        
-    else: 
-        print "initialiseRegionActivation: Unknown layer type ... "
-        
     return (nextSpan,nextNumSpan,numDimsToMani)
     
-    
-
     
 ############################################################
 #
@@ -291,7 +206,6 @@ def getRandom3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider):
     #print ks, pointsToConsider
     
     return map(lambda (x,y): (ind,x,y),ks)
-
 
 
 def getTop3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider): 

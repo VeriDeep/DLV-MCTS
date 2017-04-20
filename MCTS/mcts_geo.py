@@ -211,7 +211,7 @@ class mcts_geo:
             i += 1
         return (childTerminated, max(sampleValues))
         #return self.sampleNext(self.spans[index],self.numSpans[index])
-        #allChildren = initialiseRegions(model,self.image,self.spans[index].keys()) 
+        #allChildren = initialisePixelSets(model,self.image,self.spans[index].keys()) 
     
     def sampleNext(self,actionSequence,depth,availableActionIDs,usedActionIDs): 
         #print spansPath.keys()
@@ -247,7 +247,7 @@ class mcts_geo:
             return (depth == 0, termValue)
         else: 
             #print("continue sampling node ... ")
-            #allChildren = initialiseRegions(self.model,self.activations,spansPath.keys())
+            #allChildren = initialisePixelSets(self.model,self.activations,spansPath.keys())
 
             randomActionIndex = random.choice(list(set(availableActionIDs)-set(usedActionIDs))) #random.randint(0, len(allChildren)-1)
             action = self.actions[randomActionIndex]

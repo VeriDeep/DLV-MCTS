@@ -18,8 +18,6 @@ def usual_configuration(dataset):
         # -1 is input layer
         startLayer = -1
 
-        ## number of features of each layer 
-        numOfFeatures = 156 # 921 # 
         
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
@@ -35,7 +33,7 @@ def usual_configuration(dataset):
         # tunable parameter for MCTS
         explorationRate = 0.5
     
-        return (startIndexOfImage,startLayer,numOfFeatures,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
+        return (startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
         
     elif dataset == "cifar10": 
     
@@ -45,9 +43,6 @@ def usual_configuration(dataset):
         
         # the start layer to work from 
         startLayer = -1
-
-        ## number of features of each layer 
-        numOfFeatures = 204 # 540
         
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
@@ -60,7 +55,7 @@ def usual_configuration(dataset):
  
         explorationRate = 0.5
 
-        return (startIndexOfImage,startLayer,numOfFeatures,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
+        return (startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
         
         
     elif dataset == "gtsrb": 
@@ -69,12 +64,9 @@ def usual_configuration(dataset):
         # from the database
         startIndexOfImage = 4894
         
-        # the start layer to work from 
+        # the layer to work on 
         startLayer = -1
 
-        ## number of features of each layer 
-        numOfFeatures = 307 # 3000
-        
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
         controlledSearch = ("L1",0.15)
@@ -88,7 +80,7 @@ def usual_configuration(dataset):
 
         explorationRate = 0.5
 
-        return (startIndexOfImage,startLayer,numOfFeatures,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
+        return (startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
 
     elif dataset == "imageNet": 
     
@@ -99,9 +91,6 @@ def usual_configuration(dataset):
         # the start layer to work from 
         startLayer = 0
 
-        ## number of features of each layer 
-        numOfFeatures = 20000
-        
         ## control by distance
         controlledSearch = ("euclidean",0.1)
         #controlledSearch = ("L1",0.05)
@@ -113,4 +102,4 @@ def usual_configuration(dataset):
 
         explorationRate = 0.5
     
-        return (startIndexOfImage,startLayer,numOfFeatures,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)
+        return (startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples)

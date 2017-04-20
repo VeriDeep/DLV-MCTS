@@ -49,7 +49,7 @@ dataProcessingBatchNum = 1
 #######################################################
 
 
-(startIndexOfImage,startLayer, numOfFeatures,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples) = usual_configuration(dataset)
+(startIndexOfImage,startLayer, explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples) = usual_configuration(dataset)
     
 
 #######################################################
