@@ -23,14 +23,15 @@ class re_training:
         self.ytrain = []
         # re-training parameters
         self.batch_size = 128
-        self.nb_epoch = 2
+        self.nb_epoch = 12
+        self.reTrainedModelName = ""
         
         # save model
-        ae =  "_retrained"  
-        json_string = self.originalModel.to_json()
-        open('%s/%s%s.json'%(directory_model_string,dataset,ae), 'w').write(json_string)
-        self.originalModel.save_weights('%s/%s%s.h5'%(directory_model_string,dataset,ae), overwrite=True)
-        sio.savemat('%s/%s%s.mat'%(directory_model_string,dataset,ae), {'weights': self.originalModel.get_weights()})
+        #ae =  "_retrained_%s"%(self.reTrainedModelName)  
+        #json_string = self.originalModel.to_json()
+        #open('%s/%s%s.json'%(directory_model_string,dataset,ae), 'w').write(json_string)
+        #self.originalModel.save_weights('%s/%s%s.h5'%(directory_model_string,dataset,ae), overwrite=True)
+        #sio.savemat('%s/%s%s.mat'%(directory_model_string,dataset,ae), {'weights': self.originalModel.get_weights()})
 
     def addDatum(self,xdata,ydata): 
         if len(xdata.shape) == 2:
@@ -49,6 +50,9 @@ class re_training:
         
     def numberOfNewExamples(self):
         return len(self.xtrain)
+        
+    def setReTrainedModelName(self, str):
+        self.reTrainedModelName = str
 
     def training(self):
     
@@ -73,7 +77,7 @@ class re_training:
         
         print xtrain2.shape, ytrain2.shape, X_train.shape, Y_train.shape    
 
-        ae =  "_retrained" 
+        ae =  "" #"_retrained_%s"%(self.reTrainedModelName)
         if dataset == "mnist": 
             model = NN.read_model_from_file('%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
         elif dataset == "cifar10": 
@@ -86,7 +90,7 @@ class re_training:
         model.fit(xtrain2, ytrain2, batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=1)
                     
         # save model
-        ae =  "_retrained"  
+        ae =  "_retrained_%s"%(self.reTrainedModelName)
         json_string = model.to_json()
         open('%s/%s%s.json'%(directory_model_string,dataset,ae), 'w').write(json_string)
         model.save_weights('%s/%s%s.h5'%(directory_model_string,dataset,ae), overwrite=True)
@@ -112,12 +116,12 @@ class re_training:
 
         if dataset == "mnist": 
             (X_train, Y_train, X_test, Y_test, batch_size, nb_epoch) = NN.read_dataset()
-            ae =  "_retrained" 
+            ae =  "_retrained_%s"%(self.reTrainedModelName) 
             model = NN.read_model_from_file('%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
 
         elif dataset == "cifar10":
             (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
-            ae =  "_retrained" 
+            ae =  "_retrained_%s"%(self.reTrainedModelName) 
             model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/%s%s.mat'%(directory_model_string,dataset,ae),'%s/%s%s.json'%(directory_model_string,dataset,ae))
 
         model.compile(loss='categorical_crossentropy',

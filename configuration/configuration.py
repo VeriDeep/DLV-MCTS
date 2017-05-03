@@ -34,10 +34,11 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 1
+dataProcessingBatchNum = 20
 
-firstRound_manipulation = "pixelSets"
-sndRound_manipulation = "squares"
+
+firstRound_manipulations = ["pixelSets"] # ["squares"] # ", " 
+sndRound_manipulations = ["squares"] # ["pixelSets"] #  #   # , 
 
 
 #######################################################

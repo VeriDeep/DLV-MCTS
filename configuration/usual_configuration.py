@@ -12,23 +12,22 @@ def usual_configuration(dataset):
 
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 5444
+        startIndexOfImage = 5526
         
         # the layer to work with 
         # -1 is input layer
         startLayer = -1
 
-        
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.02)
+        controlledSearch = ("L1",0.03)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
         
         # MCTS_level_maximal_time
-        MCTS_level_maximal_time = 60
-        MCTS_all_maximal_time = 300
-        MCTS_multi_samples = 5
+        MCTS_level_maximal_time = 300
+        MCTS_all_maximal_time = 1200
+        MCTS_multi_samples = 3
         
         # tunable parameter for MCTS
         explorationRate = 0.5

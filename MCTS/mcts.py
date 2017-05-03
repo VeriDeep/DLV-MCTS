@@ -25,8 +25,6 @@ from initialisePixelSets import initialisePixelSets
 from initialiseSquares import initialiseSquares
 from re_training import re_training
 
-
-
 class mcts:
 
     def __init__(self, model, autoencoder, image, activations, layer):
@@ -71,7 +69,7 @@ class mcts:
         
         self.decisionTree = 0
         self.re_training = re_training(model,self.image.shape)
-
+        
     def predictWithActivations(self,activations):
         if self.layer > -1: 
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations,axis=0)))
@@ -202,20 +200,15 @@ class mcts:
         sampleValues = []
         i = 0
         for i in range(MCTS_multi_samples): 
-            #allChildren = copy.deepcopy(self.actions)
             (childTerminated, val) = self.sampleNext(self.spans[index],self.numSpans[index],0,availableActions2.keys(),[])
             sampleValues.append(val)
-            if childTerminated == True: break
+            #if childTerminated == True: break
             i += 1
         return (childTerminated, max(sampleValues))
-        #return self.sampleNext(self.spans[index],self.numSpans[index])
-        #allChildren = initialisePixelSets(model,self.image,self.spans[index].keys()) 
     
     def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs): 
-        #print spansPath.keys()
         activations1 = applyManipulation(self.activations,spansPath,numSpansPath)
         (newClass,newConfident) = self.predictWithActivations(activations1)
-        #print euclideanDistance(self.activations,activations1), newConfident, newClass
         (distMethod,distVal) = controlledSearch
         if distMethod == "euclidean": 
             dist = 1 - euclideanDistance(activations1,self.activations) 
@@ -233,6 +226,9 @@ class mcts:
             dist = self.activations.size - diffPercent(activations1,self.activations) * self.activations.size
             termValue = 0.0
             termByDist = dist < self.activations.size - distVal
+            
+        if termByDist == False and newConfident < 0.6: 
+            termByDist = True
 
         if newClass != self.originalClass: 
             nprint("sampling a path ends in a terminal node with depth %s... "%depth)
@@ -242,6 +238,7 @@ class mcts:
             return (depth == 0, dist)
         elif termByDist == True: 
             nprint("sampling a path ends by controlled search with depth %s ... "%depth)
+            self.re_training.addDatum(activations1,self.originalClass)
             return (depth == 0, termValue)
         elif list(set(availableActionIDs)-set(usedActionIDs)) == []: 
             nprint("sampling a path ends with depth %s because no more actions can be taken ... "%depth)
@@ -253,7 +250,6 @@ class mcts:
             (span,numSpan,_) = self.actions[randomActionIndex]
             availableActionIDs.remove(randomActionIndex)
             usedActionIDs.append(randomActionIndex)
-            #print span.keys()
             newSpanPath = self.mergeSpan(spansPath,span)
             newNumSpanPath = self.mergeNumSpan(numSpansPath,numSpan)
             return self.sampleNext(newSpanPath,newNumSpanPath,depth+1,availableActionIDs,usedActionIDs)

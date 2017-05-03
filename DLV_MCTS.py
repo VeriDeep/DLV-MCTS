@@ -41,6 +41,12 @@ import theano.tensor as T
         
 def main():
 
+    for firstRound_manipulation in firstRound_manipulations: 
+        for sndRound_manipulation in sndRound_manipulations: 
+            do_experiment(firstRound_manipulation,sndRound_manipulation)
+            
+def do_experiment(firstRound_manipulation,sndRound_manipulation):
+
     model = loadData()
     
     if whichMode == "train": return
@@ -52,7 +58,7 @@ def main():
     
     # initialise a dataCollection instance
     phase = "firstRound"
-    dc = dataCollection("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, phase, firstRound_manipulation))
+    dc = dataCollection("%s_%s_%s_%s_%s_firstRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulations, firstRound_manipulation,controlledSearch))
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -80,9 +86,10 @@ def main():
     
     # initialise a dataCollection instance
     phase = "sndRound"
-    dc = dataCollection("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, phase, sndRound_manipulation))
+    dc = dataCollection("%s_%s_%s_%s_%s_secondRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulations, sndRound_manipulation))
     dc.addComment("%s new examples are founded.\n\n"%(reTrain.numberOfNewExamples()))
     # update model with new data
+    reTrain.setReTrainedModelName("%s_%s_%s_%s"%(firstRound_manipulation,startIndexOfImage,dataProcessingBatchNum, controlledSearch))
     model = reTrain.training()
     
     updatedScore = reTrain.evaluateWithUpdatedModel()
@@ -100,6 +107,7 @@ def main():
     dc.provideDetails()
     dc.summarise()
     dc.close()
+    
       
 ###########################################################################
 #
@@ -175,9 +183,9 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
             newNodes = st.initialiseExplorationNode(leafNode,availableActions)
             for node in newNodes: 
                 (childTerminated, value) = st.sampling(node,availableActions)
-                if childTerminated == True: break
+                #if childTerminated == True: break
                 st.backPropagation(node,value)
-            if childTerminated == True: break
+            #if childTerminated == True: break
             runningTime_level = time.time() - start_time_level   
             print("best possible one is %s"%(str(st.bestCase)))
         bestChild = st.bestChild(st.rootIndex)
@@ -200,6 +208,8 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
         dataBasics.save(-1,image1,path0)
                 
         numberOfMoves += 1
+        runningTime_all = time.time() - start_time_all   
+
 
     (_,bestSpans,bestNumSpans) = st.bestCase
     #image1 = applyManipulation(st.image,st.spans[st.rootIndex],st.numSpans[st.rootIndex])
