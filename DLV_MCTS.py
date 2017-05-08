@@ -188,7 +188,7 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
                 st.backPropagation(node,value)
             #if childTerminated == True: break
             runningTime_level = time.time() - start_time_level   
-            print("best possible one is %s"%(str(st.bestCase)))
+            nprint("best possible one is %s"%(str(st.bestCase)))
         bestChild = st.bestChild(st.rootIndex)
         #st.collectUselessPixels(st.rootIndex)
         st.makeOneMove(bestChild)
