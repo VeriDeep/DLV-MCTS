@@ -38,7 +38,7 @@ dataProcessingBatchNum = 20
 
 
 firstRound_manipulations = ["pixelSets", "squares"] # ", " 
-sndRound_manipulations = ["squares", "pixelSets"] #  #   # , 
+sndRound_manipulations = ["squares", "pixelSets"] , 
 
 
 #######################################################
