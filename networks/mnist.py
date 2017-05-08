@@ -52,16 +52,17 @@ def save(layer,image,filename):
     """
     
     import matplotlib as mpl
-    mpl.use('agg')
+    mpl.pyplot.switch_backend('agg')
+    import mpl.pyplot as plt
 
-    fig = mpl.pyplot.figure()
+    fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
 
     imgplot = ax.imshow(image * 255, cmap=mpl.cm.Greys)
     imgplot.set_interpolation('nearest')
     ax.xaxis.set_ticks_position('top')
     ax.yaxis.set_ticks_position('left')
-    mpl.pyplot.savefig(filename)
+    plt.savefig(filename)
 
 
 def show(image):
@@ -70,11 +71,12 @@ def show(image):
     """
     import matplotlib as mpl
     mpl.pyplot.switch_backend('agg')
+    import mpl.pyplot as plt
 
-    fig = mpl.pyplot.figure()
+    fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     imgplot = ax.imshow(image, cmap=mpl.cm.Greys)
     imgplot.set_interpolation('nearest')
     ax.xaxis.set_ticks_position('top')
     ax.yaxis.set_ticks_position('left')
-    mpl.pyplot.show()
+    plt.show()
