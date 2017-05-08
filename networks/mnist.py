@@ -69,7 +69,7 @@ def show(image):
     Render a given numpy.uint8 2D array of pixel data.
     """
     import matplotlib as mpl
-    mpl.use('agg')
+    mpl.pyplot.switch_backend('agg')
 
     fig = mpl.pyplot.figure()
     ax = fig.add_subplot(1,1,1)
