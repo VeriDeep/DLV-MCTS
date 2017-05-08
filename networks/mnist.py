@@ -51,14 +51,14 @@ def save(layer,image,filename):
     Render a given numpy.uint8 2D array of pixel data.
     """
     
-    import matplotlib as mpl
-    mpl.pyplot.switch_backend('agg')
-    import mpl.pyplot as plt
+    import matplotlib
+    matplotlib.pyplot.switch_backend('agg')
+    import matplotlib.pyplot as plt
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
 
-    imgplot = ax.imshow(image * 255, cmap=mpl.cm.Greys)
+    imgplot = ax.imshow(image * 255, cmap=matplotlib.cm.Greys)
     imgplot.set_interpolation('nearest')
     ax.xaxis.set_ticks_position('top')
     ax.yaxis.set_ticks_position('left')
@@ -69,13 +69,13 @@ def show(image):
     """
     Render a given numpy.uint8 2D array of pixel data.
     """
-    import matplotlib as mpl
-    mpl.pyplot.switch_backend('agg')
-    import mpl.pyplot as plt
+    import matplotlib
+    matplotlib.pyplot.switch_backend('agg')
+    import matplotlib.pyplot as plt
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
-    imgplot = ax.imshow(image, cmap=mpl.cm.Greys)
+    imgplot = ax.imshow(image, cmap=matplotlib.cm.Greys)
     imgplot.set_interpolation('nearest')
     ax.xaxis.set_ticks_position('top')
     ax.yaxis.set_ticks_position('left')
