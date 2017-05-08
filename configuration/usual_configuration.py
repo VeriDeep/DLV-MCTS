@@ -20,7 +20,7 @@ def usual_configuration(dataset):
 
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.03)
+        controlledSearch = ("L1",0.02)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
         
