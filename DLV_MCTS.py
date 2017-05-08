@@ -59,6 +59,7 @@ def do_experiment(firstRound_manipulation,sndRound_manipulation):
     # initialise a dataCollection instance
     phase = "firstRound"
     dc = dataCollection("%s_%s_%s_%s_%s_firstRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulation, sndRound_manipulation))
+    print sndRound_manipulation
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -89,7 +90,7 @@ def do_experiment(firstRound_manipulation,sndRound_manipulation):
     dc = dataCollection("%s_%s_%s_%s_%s_secondRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulation, sndRound_manipulation))
     dc.addComment("%s new examples are founded.\n\n"%(reTrain.numberOfNewExamples()))
     # update model with new data
-    reTrain.setReTrainedModelName("%s_%s_%s_%s"%(firstRound_manipulation,startIndexOfImage,dataProcessingBatchNum, controlledSearch))
+    reTrain.setReTrainedModelName("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch,firstRound_manipulation))
     model = reTrain.training()
     
     updatedScore = reTrain.evaluateWithUpdatedModel()
