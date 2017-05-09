@@ -227,7 +227,7 @@ class mcts:
             termValue = 0.0
             termByDist = dist < self.activations.size - distVal
             
-        if termByDist == False and newConfident < 0.5: 
+        if termByDist == False and newConfident < 0.5 and depth <= 3: 
             termByDist = True
 
         if newClass != self.originalClass: 
