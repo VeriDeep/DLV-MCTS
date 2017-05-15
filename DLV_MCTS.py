@@ -38,8 +38,12 @@ from re_training import re_training
 
 import theano
 import theano.tensor as T
+
         
 def main():
+
+    print 'Number of arguments:', len(sys.argv), 'arguments.'
+    print 'Argument List:', str(sys.argv)
 
     for firstRound_manipulation in firstRound_manipulations: 
         for sndRound_manipulation in sndRound_manipulations: 
