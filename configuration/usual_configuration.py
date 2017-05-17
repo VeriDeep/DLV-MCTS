@@ -20,14 +20,14 @@ def usual_configuration(dataset):
 
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.10)
+        controlledSearch = ("L1",0.02)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
         
         # MCTS_level_maximal_time
-        MCTS_level_maximal_time = 300
-        MCTS_all_maximal_time = 1200
-        MCTS_multi_samples = 3
+        MCTS_level_maximal_time = 120
+        MCTS_all_maximal_time = 480
+        MCTS_multi_samples = 5
         
         # tunable parameter for MCTS
         explorationRate = 0.5
