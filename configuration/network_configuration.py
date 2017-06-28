@@ -49,7 +49,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/cifar10_statistics")
         directory_pic_string = makedirectory("data/cifar10_pic")
  
-        featureDims = 16
+        featureDims = 9
         span = 255/float(255)
         numSpan = 1
         
@@ -61,7 +61,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/gtsrb_statistics")
         directory_pic_string = makedirectory("data/gtsrb_pic")
         
-        featureDims = 10
+        featureDims = 9 # 81 #
         span = 255/float(255)
         numSpan = 1
                 
@@ -73,7 +73,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/imageNet_statistics")
         directory_pic_string = makedirectory("data/imageNet_pic")
 
-        featureDims = 5
+        featureDims = 256
         span = 125
         numSpan = 1
 

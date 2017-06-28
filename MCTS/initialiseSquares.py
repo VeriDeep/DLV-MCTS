@@ -64,7 +64,7 @@ def initialiseSquares(model,image,manipulated):
 
 def findSquareSize(num, imageSize):
     i = 1
-    while i <= int(sqrt(imageSize)): 
+    while i <= imageSize: 
         if i**2 < num and (i+1)**2 >= num: 
             return i+1
         i += 1

@@ -6,6 +6,12 @@ import numpy as np
 import PIL.Image
 
 NUM_CLASSES = 10
+
+def next_index(index,index2):
+    if index < NUM_CLASSES - 1: index1 = index + 1
+    else: index1 = 0
+    if index1 != index2: return index1
+    else: return next_index(index1,index2)
     
 def LABELS(index):
     labels = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog',

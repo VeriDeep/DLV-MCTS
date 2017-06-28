@@ -6,6 +6,13 @@ import numpy as np
 
 NUM_CLASSES = 10
 
+# get next index of index other than index2
+def next_index(index,index2):
+    if index < NUM_CLASSES - 1: index1 = index + 1
+    else: index1 = 0
+    if index1 != index2: return index1
+    else: return next_index(index1,index2)
+
 def LABELS(index):
     labels = ['0', '1', '2', '3', '4', '5', '6',
           '7', '8', '9']

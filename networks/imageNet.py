@@ -11,6 +11,16 @@ def LABELS(index):
     if len(ls) > 0: 
        return ls[index]
     else: return range(1000)[index] 
+    
+    
+def next_index(index,index2):
+    if index < len(labels()) - 1: index1 = index + 1
+    else: index1 = 0
+    if index1 != index2: return index1
+    else: return next_index(index1,index2)
+    
+    
+    
 
 def labels():
 

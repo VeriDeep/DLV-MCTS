@@ -24,6 +24,8 @@ from decisionTree import decisionTree
 from initialisePixelSets import initialisePixelSets
 from initialiseSquares import initialiseSquares
 from re_training import re_training
+from analyseAdv import analyseAdv
+from superPixels import superPixel_slic
 
 class mcts:
 
@@ -62,8 +64,12 @@ class mcts:
         # best case
         self.bestCase = (0,{},{})
         
+        # number of adversarial exmaples
+        self.numAdv = 0
+        self.analyseAdv = analyseAdv(activations)
+        
         # useless points
-        self.uselessPixels = []
+        self.usefulPixels = {}
         
         (self.originalClass,self.originalConfident) = self.predictWithActivations(self.activations)
         
@@ -96,12 +102,14 @@ class mcts:
             allChildren = initialisePixelSets(self.autoencoder,self.activations,[])
         elif self.manipulationType == "squares": 
             allChildren = initialiseSquares(self.autoencoder,self.activations,[])
+        elif self.manipulationType == "slic": 
+            allChildren = superPixel_slic(self.activations)
             
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 
         print "%s actions have been initialised. "%(len(self.actions))
         # initialise decision tree
-        self.decisionTree = decisionTree(self.actions)
+        self.decisionTree = decisionTree(self.model, self.actions,self.activations)
         
     def initialiseLeafNode(self,index,parentIndex,newSpans,newNumSpans):
         nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))
@@ -174,7 +182,7 @@ class mcts:
         
     def initialiseExplorationNode(self,index,availableActions):
         nprint("expanding %s"%(index))
-        for (actionId, (span,numSpan,_)) in availableActions.iteritems() : #initialisePixelSets(self.model,self.image,list(set(self.spans[index].keys() + self.uselessPixels))): 
+        for (actionId, (span,numSpan,_)) in availableActions.iteritems() : #initialisePixelSets(self.model,self.image,list(set(self.spans[index].keys() + self.usefulPixels))): 
             self.indexToNow += 1
             self.indexToActionID[self.indexToNow] = actionId
             self.initialiseLeafNode(self.indexToNow,index,span,numSpan)
@@ -191,8 +199,56 @@ class mcts:
             self.backPropagation(self.parent[index],value)
         else: 
             nprint("backPropagating ends on node %s"%(index))
+        
             
-    # start random sampling and return the eclidean value as the value
+    def analysePixels(self):
+        #self.usefulPixels = self.decisionTree.collectUsefulPixels()
+        usefulPixels = [] 
+        for index in self.usefulPixels: 
+            usefulPixels.append(self.actions[index])
+        #print("%s useful pixels = %s"%(len(self.usefulPixels),self.usefulPixels))
+        values = self.usefulPixels.values()
+        images = []
+        for v in values: 
+            pixels = [ dim for key, value in self.usefulPixels.iteritems() for dim in self.actions[key][0].keys() if value >= v ]
+            ndim = self.image.ndim
+            usefulimage = copy.deepcopy(self.image)
+            span = {}
+            numSpan = {}
+            for p in pixels: 
+                span[p] = 1
+                numSpan[p] = 1
+            #usefulimage = applyManipulation(usefulimage,span,numSpan)
+            #'''
+            if ndim == 2: 
+                for x in range(len(usefulimage)): 
+                    for y in range(len(usefulimage[0])): 
+                        if (x,y) not in pixels: 
+                            usefulimage[x][y] = 0
+            elif ndim == 3:
+                for x in range(len(usefulimage)): 
+                    for y in range(len(usefulimage[0])): 
+                        for z in range(len(usefulimage[0][0])):
+                            if (x,y,z) not in pixels: 
+                                usefulimage[x][y][z] = 0
+            #'''
+            images.append((v,usefulimage))
+        return images
+        
+    def addUsefulPixels(self,dims):
+        for dim in dims: 
+            if dim in self.usefulPixels.keys(): 
+                self.usefulPixels[dim] += 1
+            else: 
+                self.usefulPixels[dim] = 1
+                
+    def getUsefulPixels(self,accDims,d): 
+        import operator
+        sorted_accDims = sorted(accDims, key=operator.itemgetter(1), reverse=True)
+        needed_accDims = sorted_accDims[:d-1]
+        self.addUsefulPixels([x for (x,y) in needed_accDims])
+            
+    # start random sampling and return the Euclidean value as the value
     def sampling(self,index,availableActions):
         nprint("start sampling node %s"%(index))
         availableActions2 = copy.deepcopy(availableActions)
@@ -200,13 +256,13 @@ class mcts:
         sampleValues = []
         i = 0
         for i in range(MCTS_multi_samples): 
-            (childTerminated, val) = self.sampleNext(self.spans[index],self.numSpans[index],0,availableActions2.keys(),[])
+            (childTerminated, val) = self.sampleNext(self.spans[index],self.numSpans[index],0,availableActions2.keys(),[],[],2)
             sampleValues.append(val)
             #if childTerminated == True: break
             i += 1
         return (childTerminated, max(sampleValues))
     
-    def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs): 
+    def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs,accDims,d): 
         activations1 = applyManipulation(self.activations,spansPath,numSpansPath)
         (newClass,newConfident) = self.predictWithActivations(activations1)
         (distMethod,distVal) = controlledSearch
@@ -226,13 +282,21 @@ class mcts:
             dist = self.activations.size - diffPercent(activations1,self.activations) * self.activations.size
             termValue = 0.0
             termByDist = dist < self.activations.size - distVal
-            
+
         #if termByDist == False and newConfident < 0.5 and depth <= 3: 
         #    termByDist = True
 
-        if newClass != self.originalClass: 
+        if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
+            # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
             nprint("sampling a path ends in a terminal node with depth %s... "%depth)
+            
+            (spansPath,numSpansPath) = self.scrutinizePath(spansPath,numSpansPath,newClass)
+            
             self.decisionTree.addOnePath(dist,spansPath,numSpansPath)
+            self.numAdv += 1
+            self.analyseAdv.addAdv(activations1)
+            self.getUsefulPixels(accDims,d)
+                
             self.re_training.addDatum(activations1,self.originalClass)
             if self.bestCase[0] < dist: self.bestCase = (dist,spansPath,numSpansPath)
             return (depth == 0, dist)
@@ -252,7 +316,35 @@ class mcts:
             usedActionIDs.append(randomActionIndex)
             newSpanPath = self.mergeSpan(spansPath,span)
             newNumSpanPath = self.mergeNumSpan(numSpansPath,numSpan)
-            return self.sampleNext(newSpanPath,newNumSpanPath,depth+1,availableActionIDs,usedActionIDs)
+            activations2 = applyManipulation(self.activations,newSpanPath,newNumSpanPath)
+            (newClass2,newConfident2) = self.predictWithActivations(activations2)
+            confGap2 = newConfident - newConfident2
+            if newClass2 == newClass: 
+                accDims.append((randomActionIndex,confGap2))
+            else: accDims.append((randomActionIndex,1.0))
+
+            return self.sampleNext(newSpanPath,newNumSpanPath,depth+1,availableActionIDs,usedActionIDs,accDims,d)
+            
+    def scrutinizePath(self,spanPath,numSpanPath,changedClass): 
+        lastSpanPath = copy.deepcopy(spanPath)
+        for key, (span,numSpan,_) in self.actions.iteritems(): 
+            if set(span.keys()).issubset(set(spanPath.keys())): 
+                tempSpanPath = copy.deepcopy(spanPath)
+                tempNumSpanPath = copy.deepcopy(numSpanPath)
+                for k in span.keys(): 
+                    tempSpanPath.pop(k)
+                    tempNumSpanPath.pop(k) 
+                activations1 = applyManipulation(self.activations,tempSpanPath,tempNumSpanPath)
+                (newClass,newConfident) = self.predictWithActivations(activations1)
+                #if changedClass == newClass: 
+                if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
+                    for k in span.keys(): 
+                        spanPath.pop(k)
+                        numSpanPath.pop(k)
+        if len(lastSpanPath.keys()) != len(spanPath.keys()): 
+            return self.scrutinizePath(spanPath,numSpanPath,changedClass)
+        else: 
+            return (spanPath,numSpanPath)
             
     def terminalNode(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
@@ -304,5 +396,6 @@ class mcts:
         
     def showDecisionTree(self):
         self.decisionTree.show()
+        self.decisionTree.outputTree()
     
         

@@ -30,7 +30,7 @@ from mcts_geo import mcts_geo
 
 from dataCollection import dataCollection
 
-
+from superPixels import superPixel_slic
 from mnist_network import dynamic_build_model 
 
 from inputManipulation import applyManipulation,assignManipulationSimple
@@ -42,14 +42,55 @@ import theano.tensor as T
         
 def main():
 
+    re-training()
+    # explaination()
+
+def explaination():
+
+    model = loadData()
+    
+    if whichMode == "train": return
+    
+    if trainingModel == "autoencoder":
+        (model,autoencoder) = model
+        if startLayer == -1: autoencoder = model
+    else: autoencoder = model
+    
+    # initialise a dataCollection instance
+    phase = "firstRound"
+    dc = dataCollection("%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch))
+    # initialise a re_training instance
+    reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
+    
+    #originalScore = reTrain.evaluateWithOriginalModel()
+    #dc.addComment("original test score: %s\n\n"%originalScore)
+    # finding adversarial examples from original model
+    succNum = 0
+    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
+        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
+        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,firstRound_manipulations[0])
+        if succ == True: succNum += 1
+    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
+            
+    # output statistics for original model
+    print("Please refer to the file %s for statistics."%(dc.fileName))
+    dc.provideDetails()
+    dc.summarise()
+    dc.close()
+
+
+
+def re-training():
+
+
     print 'Number of arguments:', len(sys.argv), 'arguments.'
     print 'Argument List:', str(sys.argv)
 
     for firstRound_manipulation in firstRound_manipulations: 
         for sndRound_manipulation in sndRound_manipulations: 
-            do_experiment(firstRound_manipulation,sndRound_manipulation)
+            reTraining_experiment(firstRound_manipulation,sndRound_manipulation)
             
-def do_experiment(firstRound_manipulation,sndRound_manipulation):
+def reTraining_experiment(firstRound_manipulation,sndRound_manipulation):
 
     model = loadData()
     
@@ -63,7 +104,6 @@ def do_experiment(firstRound_manipulation,sndRound_manipulation):
     # initialise a dataCollection instance
     phase = "firstRound"
     dc = dataCollection("%s_%s_%s_%s_%s_firstRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulation, sndRound_manipulation))
-    print sndRound_manipulation
     # initialise a re_training instance
     reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
     
@@ -112,6 +152,8 @@ def do_experiment(firstRound_manipulation,sndRound_manipulation):
     dc.provideDetails()
     dc.summarise()
     dc.close()
+
+
     
       
 ###########################################################################
@@ -130,9 +172,10 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
     global np
     image = NN.getImage(model,startIndexOfImage)
     print("the shape of the input is "+ str(image.shape))
-        
-    #image = np.array([3.58747339,1.11101673])
     
+    #superPixel_slic(image)
+    #return
+            
     dc.initialiseIndex(startIndexOfImage)    
     dc.initialiseLayer(startLayer)
             
@@ -230,7 +273,21 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
         dataBasics.save(-1,np.subtract(image,image1),path0)
         print("difference between images: %s"%(diffImage(image,image1)))
 
-        #st.showDecisionTree()
+        st.showDecisionTree()
+        pixelImages = st.analysePixels()
+        advImages = st.analyseAdv.analyse()
+        for (v,pixelImage) in pixelImages: 
+            path0="%s/%s_useful_%s.png"%(directory_pic_string,startIndexOfImage,v)
+            dataBasics.save(-1,pixelImage,path0)
+            
+        for i in range(len(advImages)): 
+            (advnum,advimg) = advImages[i]
+            (advClass,advConfident) = NN.predictWithImage(model,advimg)
+            advClassStr = dataBasics.LABELS(int(advClass))
+            path0="%s/%s_adv_%s_%s_%s.png"%(directory_pic_string,startIndexOfImage,i,advnum,advClassStr)
+            dataBasics.save(-1,advimg,path0)
+        
+        print "number of adversarial examples found: %s"%(st.numAdv)
     
         eudist = euclideanDistance(st.image,image1)
         l1dist = l1Distance(st.image,image1)

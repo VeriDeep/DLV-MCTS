@@ -17,8 +17,8 @@ from usual_configuration import *
 #######################################################
 
 # which dataset to work with
-dataset = "mnist"
-#dataset = "gtsrb"
+#dataset = "mnist"
+dataset = "gtsrb"
 #dataset = "cifar10"
 #dataset = "imageNet"
 
@@ -34,11 +34,11 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 20
+dataProcessingBatchNum = 1
 
 
-firstRound_manipulations = ["pixelSets", "squares"]
-sndRound_manipulations = ["squares", "pixelSets"]
+firstRound_manipulations = ["slic", "squares", "pixelSets"]
+sndRound_manipulations = ["squares", "pixelSets", "slic"]
 
 
 #######################################################
@@ -53,7 +53,7 @@ sndRound_manipulations = ["squares", "pixelSets"]
 #######################################################
 
 
-(startIndexOfImage,startLayer, explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples) = usual_configuration(dataset)
+(startIndexOfImage,startLayer, explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging) = usual_configuration(dataset)
     
 
 #######################################################

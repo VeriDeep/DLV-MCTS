@@ -10,7 +10,11 @@ import h5py
 NUM_CLASSES = 43
 IMG_SIZE = 32
 
-
+def next_index(index,index2):
+    if index < NUM_CLASSES - 1: index1 = index + 1
+    else: index1 = 0
+    if index1 != index2: return index1
+    else: return next_index(index1,index2)
 
 def LABELS(index):
     labels = ['speed limit 20 (prohibitory)', 'speed limit 30 (prohibitory)',
