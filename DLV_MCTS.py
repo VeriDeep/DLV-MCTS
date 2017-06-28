@@ -42,8 +42,8 @@ import theano.tensor as T
         
 def main():
 
-    re-training()
-    # explaination()
+    #re_training()
+    explaination()
 
 def explaination():
 
@@ -80,7 +80,7 @@ def explaination():
 
 
 
-def re-training():
+def re_training():
 
 
     print 'Number of arguments:', len(sys.argv), 'arguments.'
